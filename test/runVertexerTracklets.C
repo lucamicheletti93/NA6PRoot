@@ -22,18 +22,20 @@
 #include "NA6PVerTelCluster.h"
 #include "NA6PVertex.h"
 #include "NA6PVerTelReconstruction.h"
+#include "NA6PMCEventHeader.h"
 #endif
 
 void runVertexerTracklets(int firstEv = 0,
                           int lastEv = 999999,
-                          const char* dirSimu = "/data/lmichele/datasets/real_config/PYTHIA_PbPb_MB",
+                          const char* dirSimu = "/data/lmichele/datasets/real_config/PYTHIA_PbPb_MB_10000",
                           const char* na6pLayoutFile = "/data/lmichele/datasets/na6pLayout_real.ini",
-                          const char* fOutName = "outputs/real_config/PYTHIA_PbPb_MB/vtx_fixed.root")
-                          const char* dirSimu = ".")
+                          const char* fOutName = "outputs/real_config/PYTHIA_PbPb_MB_10000/vtx.root")
 //			const char *dirSimu = "Angantyr")
 {
   TFile* fk = new TFile(Form("%s/MCKine.root", dirSimu));
   TTree* mcTree = (TTree*)fk->Get("mckine");
+  NA6PMCEventHeader mcHeader, *mcHeaderPtr = &mcHeader;
+  mcTree->SetBranchAddress("header", &mcHeaderPtr);
   int nEv = mcTree->GetEntries();
   std::vector<TParticle>* mcArr = nullptr;
   mcTree->SetBranchAddress("tracks", &mcArr);
@@ -49,13 +51,14 @@ void runVertexerTracklets(int firstEv = 0,
   if (firstEv < 0)
     firstEv = 0;
 
-  int nVtx, targId;
+  int nPrimaries, nVtx, targId;
   double genX, genY, genZ;
   int nContrib[20];
   double recsX[20], recsY[20], recsZ[20];
 
   TFile *fOut = new TFile(fOutName, "RECREATE");
   TTree *tree = new TTree("vertex", "vertex");
+  tree -> Branch("nPrimaries", &nPrimaries, "nPrimaries/I");
   tree -> Branch("nVtx", &nVtx, "nVtx/I");
   tree -> Branch("targId", &targId, "targId/I");
   tree -> Branch("genX", &genX, "genX/D");
@@ -105,6 +108,8 @@ void runVertexerTracklets(int firstEv = 0,
   for (int jEv = firstEv; jEv < lastEv; jEv++) {
     mcTree->GetEvent(jEv);
     tc->GetEvent(jEv);
+    nPrimaries = mcHeader.getNPrimaries();
+    //std::cout << jEv << "] " <<  mcHeader.getVX() << " , " << mcHeader.getVY() << " , " << mcHeader.getVZ() << std::endl;
     int nPart = mcArr->size();
     double xVertGen = 0;
     double yVertGen = 0;
