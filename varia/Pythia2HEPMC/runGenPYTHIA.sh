@@ -3,14 +3,14 @@ if [[ -z $(which parallel) ]] ; then
   exit 1
 fi
 
-NJOBS=20
+NJOBS=100
 NCORES=20
 NEVENTSPERJOB=100
 ENERGY=40
 MINRAP=0.5
 MAXRAP=4.5
 CONFIG=PbPb_MB.cmnd
-OUTDIR=data/PYTHIA_PbPb_MB
+OUTDIR=data/PYTHIA_PbPb_Centr080
 
 SEEDSTART=1
 SEEDEND=$(($SEEDSTART + $NJOBS - 1))

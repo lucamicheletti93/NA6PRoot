@@ -27,10 +27,10 @@
 #endif
 
 void runVertexerTracklets(int firstEv = 0,
-                          int lastEv = 10,
-                          const char* dirSimu = "/data/lmichele/datasets/real_config/PYTHIA_PbPb_MB_fragments_test/0",
+                          int lastEv = 10000,
+                          const char* dirSimu = "/data/lmichele/datasets/real_config/PYTHIA_PbPb_Centr080",
                           const char* na6pLayoutFile = "/data/lmichele/datasets/na6pLayout_real.ini",
-                          const char* fOutName = "outputs/real_config/PYTHIA_PbPb_MB_newTest/vtx_fixed_new_test.root")
+                          const char* fOutName = "outputs/real_config/PYTHIA_PbPb_Centr080/vtx.root")
 {
   TFile* fk = new TFile(Form("%s/MCKine.root", dirSimu));
   TTree* mcTree = (TTree*)fk->Get("mckine");
@@ -54,6 +54,9 @@ void runVertexerTracklets(int firstEv = 0,
   int nVtx, targId;
   double genX, genY, genZ;
   int nContrib[20];
+  int nPrimaries;
+  int nParticipants;
+  int nCollisions;
   double recsX[20], recsY[20], recsZ[20];
 
   TFile *fOut = new TFile(fOutName, "RECREATE");
@@ -64,6 +67,9 @@ void runVertexerTracklets(int firstEv = 0,
   tree -> Branch("genY", &genY, "genY/D");
   tree -> Branch("genZ", &genZ, "genZ/D");
   tree -> Branch("nContrib", nContrib, "nContrib[20]/I");
+  tree -> Branch("nPrimaries", &nPrimaries, "nPrimaries/I");
+  tree -> Branch("nParticipants", &nParticipants, "nParticipants/I");
+  tree -> Branch("nCollisions", &nCollisions, "nCollisions/I");
   tree -> Branch("recsX", recsX, "recsX[20]/D");
   tree -> Branch("recsY", recsY, "recsY[20]/D");
   tree -> Branch("recsZ", recsZ, "recsZ[20]/D");
@@ -207,7 +213,9 @@ void runVertexerTracklets(int firstEv = 0,
       }
       hnvertcontrib->Fill(jv, vert.getNContributors());
 
-      
+      nPrimaries = mcHead->getNPrimaries();
+      nCollisions = mcHead->getNColl();
+      nParticipants = mcHead->getNPart();
       nContrib[jv] = vert.getNContributors();
       recsX[jv] = xRec;
       recsY[jv] = yRec;
@@ -262,4 +270,5 @@ void runVertexerTracklets(int firstEv = 0,
   hnvertcontrib -> Write();
   tree -> Write();
   fOut -> Close();
+  std::cout << "* * * Writing output in " << fOutName << " * * *" << std::endl;
 }

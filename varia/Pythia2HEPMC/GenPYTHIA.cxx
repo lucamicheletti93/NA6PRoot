@@ -87,6 +87,7 @@ int main(int argc, char* argv[])
   TH1D* hyall = new TH1D("hyall", "rapidity all", 100, -2.5, 2.5);
   TH1D* hptall = new TH1D("hptall", "transverse momentum all", 100, 0., 10.);
   TH2D* hptvsyall = new TH2D("hptvsyall", "transverse momentum vs rapidity all", 100, -2.5, 2.5, 100, 0., 10.);
+  TH1D* hnpart = new TH1D("hnpart", "number of participants", 10000, 0., 10000.);
 
   // Histograms for specific particle indicated in the input list
   TH1D* hmspec = new TH1D(Form("mass id%d", specparticle), Form("mass id%d", specparticle), 100, 0., 10.);
@@ -137,6 +138,7 @@ int main(int argc, char* argv[])
     const Pythia8::HIInfo* hi = pythia.info.hiInfo;
     if (hi) {
       printf("Impact parameter = %3.2f Ncoll = %d Npart = %d\n", hi->b(), hi->nCollTot(), hi->nPartProj() + hi->nPartTarg());
+      hnpart->Fill(hi->nPartProj() + hi->nPartTarg());
     }
 
     // Write event to HepMC3 tree
@@ -242,6 +244,7 @@ int main(int argc, char* argv[])
 
   TFile* fcc = new TFile(Form("%s/PYTHIA8_controlhistos.root", outDir.c_str()), "RECREATE");
   hidall->Write();
+  hnpart->Write();
   hmall->Write();
   hyall->Write();
   hptall->Write();

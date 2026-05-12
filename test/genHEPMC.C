@@ -9,6 +9,7 @@ NA6PGenerator* genHEPMC(const std::string& inpFileName, bool storeDecayed = true
     LOGP(fatal, "HEPMC input file name is not provided");
   }
   auto gen = new NA6PGenHepMC(genName, inpFileName, storeDecayed);
+  gen->TrackSpectators();
 
   return gen;
 }
