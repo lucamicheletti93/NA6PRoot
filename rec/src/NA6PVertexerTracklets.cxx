@@ -841,6 +841,7 @@ bool NA6PVertexerTracklets::compute3DVertices(const std::vector<TrackletForVerte
         // Reject seed if outside allowed region
         if (rad2 > mMaxPairVertRadius * mMaxPairVertRadius || tmpVertex[2] < mZMin || tmpVertex[2] > mZMax) {
           candVertices.pop_back();
+          //continue;
           break;
         }
         // grow the candidate vertex by attaching tracklets compatible with the evolving vertex position
@@ -909,12 +910,16 @@ bool NA6PVertexerTracklets::compute3DVertices(const std::vector<TrackletForVerte
         float distance = (vertex1[0] - vertex2[0]) * (vertex1[0] - vertex2[0]) +
                          (vertex1[1] - vertex2[1]) * (vertex1[1] - vertex2[1]) +
                          (vertex1[2] - vertex2[2]) * (vertex1[2] - vertex2[2]);
+        //if (distance < mMinCandidateDistance3D * mMinCandidateDistance3D) {
         if (distance < mMinCandidateDistance3D) {
           for (auto label : candVertices[jCand2].getLabels()) {
             const NA6PLine& line = trackletLines[label];
             candVertices[jCand1].add(label, line);
           }
           vertex1 = candVertices[jCand1].getVertex();
+          //candVertices.erase(candVertices.begin() + jCand2);
+          //--jCand2;
+          //--nCandVertices;
         }
         candVertices.erase(candVertices.begin() + jCand2);
         --jCand2;
